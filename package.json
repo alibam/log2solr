@@ -1,0 +1,22 @@
+{
+  "author": {
+    "name": "Liu Yang",
+    "email": "liuyang.jl@gmail.com",
+    "url": "http://weibo.com/alibam"
+  },
+  "name": "log2solr",
+  "main": "./main",
+  "description": "Parse Tomcat logs and then index to solr server. ",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alibam/log2solr.git"
+  },
+  "engines": {
+    "node": ">= 0.10.29"
+  },
+  "dependencies": {
+    "uuid": "~1.4.1",
+    "solr-client": "~0.2.9"
+  }
+}
