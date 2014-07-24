@@ -1,31 +1,52 @@
 var Log2doc = require('./lib/log2doc'),
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path'),
+    solr = require('solr-client'),
+    Constants = require('./lib/constants');
 
-var logfile = './sample/picc4a.log';
+// var logfile = './sample/picc4a.log';
 // var logfile = 'D:/ty4a/tools/tomcatlog/logs/picc4a.log.2014-07-15';
 
-var tcFolder = 'D:/ty4a/tools/tomcatlog/logs/10/11';
+var logFolder = Constants.DEV.BASE;
 
-if (!fs.existsSync(tcFolder)) {
-	console.log('file not exit');
-	process.exit();
+if (!fs.existsSync(logFolder) || !fs.statSync(logFolder).isDirectory()) {
+	console.log('file not exit or not a folder.');
+	process.exit(1);
 }
 
-if(fs.statSync(tcFolder).isDirectory()) {
-	console.log('folder');
-	process.exit();
-} else {
-	process.exit();
+console.log(logFolder);
+
+fs.readdirSync(logFolder).forEach(function (filename) {
+    if (filename === 'catalina.out') {
+    	console.log('Realtime log.', filename);
+    } else {
+    	var log2doc = new Log2doc(filename, Constants.DEV);
+    	log2doc.on('parsed', function(docs) {
+		    // console.log(filename, 'parsed logs ：',docs.length);
+		    process.nextTick(function () {
+		        add2Solr(docs, filename);
+			});
+		});
+    }
+});
+
+function add2Solr(docs, tag) {
+	console.time(tag);
+    client = solr.createClient();
+    client.autoCommit = true;
+    client.add(docs,function(err,obj){
+        if (err) {
+       		console.log(err);
+        } else {
+       	    console.log(obj);
+            console.timeEnd(tag);
+        }
+    });
 }
 
 
 
-
-
-
-
-
-var log2doc = new Log2doc(logfile);
+/*var log2doc = new Log2doc(logfile);
 
 console.log(process.argv.length < 3);
 
@@ -42,4 +63,4 @@ function add2Solr(docs) {
     if(docs.length > 0)
         for(var i in docs)
             console.log(docs[i]);
-}
+}*/
