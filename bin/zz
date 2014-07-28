@@ -2,16 +2,43 @@
 
 var path = require('path'),
 	version = require('../package.json').version,
+	Constants = require('../lib/constants');
     program = require('commander');
 
 var COMMAND_ERROR = 'Illegal command format. Use `zz --help` to get more info.\n'.red;
 
 program.version(version);
 
+var checkAndGetServerOpt = function (serverId) {
+	var appOpt;
+	
+	if (typeof(serverId) === 'undefined') {
+    	console.log('serverId must be set.');
+    	process.exit(1);
+    }
+    
+    for (var k in Constants) {
+    	if (serverId.toUpperCase() === k.toUpperCase())
+    		appOpt = Constants[k];
+    }
+    
+    if (!appOpt) {
+    	console.log('ServerId must be \'app1\'-\'app6\', which represent server1-server6.');	
+        process.exit(1);
+    }
+
+    return appOpt;
+}
+
 program.command('init [serverId]')
     .description('init histroy log to solr.')
+    .on('--help', function () {
+    	console.log('  example:  zz init app1');
+    	console.log('  app1 was server : http://192.168.103.8:38080 ');
+    })
     .action(function (serverId) {
-    	console.log('Init logs to Solr', serverId);
+    	var serverOpt = checkAndGetServerOpt(serverId);
+    	console.log('Init logs to Solr', serverId, '\n', serverOpt);
     });
 
 program.command('update-his [serverId]')
@@ -33,8 +60,9 @@ program.command('delete [serverId]')
     });
 
 program.command('*')
-  .action(function() {
-    console.log(COMMAND_ERROR);
-  });
+    .action(function () {
+        console.log(COMMAND_ERROR);
+    });
 
 program.parse(process.argv);
+
