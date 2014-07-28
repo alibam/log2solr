@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+var path = require('path'),
+	version = require('../package.json').version,
+    program = require('commander');
+
+var COMMAND_ERROR = 'Illegal command format. Use `zz --help` to get more info.\n'.red;
+
+program.version(version);
+
+program.command('init [serverId]')
+    .description('init histroy log to solr.')
+    .action(function (serverId) {
+    	console.log('Init logs to Solr', serverId);
+    });
+
+program.command('update-his [serverId]')
+    .description('update histroy log which name end with yyyy-mm-dd , eg: picc4a.log.2014-07-12')
+    .action(function (serverId) {
+    	console.log('update-his',  serverId);
+    });
+
+program.command('update-realTime [serverId]')
+    .description('update RealTime log catalina.out')
+    .action(function (serverId) {
+    	console.log('update-RealTime',  serverId);
+    });
+
+program.command('delete [serverId]')
+    .description('delete and commit from solr.')
+    .action(function (serverId) {
+    	console.log('delete and commit from solr',  serverId);
+    });
+
+program.command('*')
+  .action(function() {
+    console.log(COMMAND_ERROR);
+  });
+
+program.parse(process.argv);

@@ -26,7 +26,6 @@ rl.on('line', function(line) {
 });
 
 rl.on('close', function () {
-	rl.output.write('\n');
 	console.log('finished. unMatch total: ', count);
 	console.log('finished.   Match total: ', ccount);
 });

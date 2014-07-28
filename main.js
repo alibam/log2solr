@@ -1,4 +1,5 @@
 var Log2doc = require('./lib/log2doc'),
+    Rtlog2doc = require('./lib/rtlog2doc'),
     fs = require('fs'),
     path = require('path'),
     solr = require('solr-client'),
@@ -17,8 +18,10 @@ if (!fs.existsSync(logFolder) || !fs.statSync(logFolder).isDirectory()) {
 console.log(logFolder);
 
 fs.readdirSync(logFolder).forEach(function (filename) {
-    if (filename === 'catalina.out') {
-    	console.log('Realtime log.', filename);
+    /*if (filename === 'catalina.out') {
+    	// console.log('Realtime log.', filename);
+        var rtlog2doc = new Rtlog2doc(filename, Constants.DEV);
+
     } else {
     	var log2doc = new Log2doc(filename, Constants.DEV);
     	log2doc.on('parsed', function(docs) {
@@ -27,7 +30,15 @@ fs.readdirSync(logFolder).forEach(function (filename) {
 		        add2Solr(docs, filename);
 			});
 		});
-    }
+    }*/
+
+    var log2doc = new Rtlog2doc(filename, Constants.DEV);
+    log2doc.on('parsed', function(docs) {
+        // console.log(filename, 'parsed logs ：',docs.length);
+        process.nextTick(function () {
+            add2Solr(docs, filename);
+        });
+    });
 });
 
 function add2Solr(docs, tag) {

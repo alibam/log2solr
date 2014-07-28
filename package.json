@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "uuid": "~1.4.1",
-    "solr-client": "~0.2.9"
+    "solr-client": "~0.2.9",
+    "commander": "~2.3.0"
   }
 }
